@@ -26,8 +26,8 @@ public class Task {
     @Column(name = "c_isdone")
     private Boolean isDone;
 
-    @Column(name = "c_date")
-    private ZonedDateTime date;
+    @Column(name = "c_date_to_complete")
+    private ZonedDateTime dateToComplete;
 
     @ManyToOne
     private User author;
