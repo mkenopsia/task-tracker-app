@@ -3,16 +3,20 @@ package ru.mkenopsia.tasktrackerbackend.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.mkenopsia.tasktrackerbackend.dto.TokenDto;
 import ru.mkenopsia.tasktrackerbackend.entity.User;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Component
 public class JwtTokenUtils {
@@ -46,18 +50,36 @@ public class JwtTokenUtils {
     }
 
     public String getUsername(String token) {
-        return this.getAllClaimsFromToken(token).getSubject();
+        return this.getAllClaims(token).getSubject();
     }
 
     public String getEmail(String token) {
-        return this.getAllClaimsFromToken(token).get("email", String.class);
+        return this.getAllClaims(token).get("email", String.class);
     }
 
-    private Claims getAllClaimsFromToken(String token) {
+    public boolean isTokenValid(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private Claims getAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public String getToken(Cookie[] cookies) {
+        if(cookies == null) return null;
+
+        return CookieUtils.getJwtBearerCookie(cookies).getValue();
     }
 }
