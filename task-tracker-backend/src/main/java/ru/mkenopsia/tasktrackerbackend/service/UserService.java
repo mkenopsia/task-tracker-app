@@ -2,11 +2,14 @@ package ru.mkenopsia.tasktrackerbackend.service;
 
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mkenopsia.tasktrackerbackend.dto.UserInfoDto;
 import ru.mkenopsia.tasktrackerbackend.entity.User;
+import ru.mkenopsia.tasktrackerbackend.mapper.UserMapper;
 import ru.mkenopsia.tasktrackerbackend.repository.UserRepository;
 
 import java.util.NoSuchElementException;
@@ -17,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Transactional
     public User save(User user) {
@@ -40,5 +44,12 @@ public class UserService {
     public User findByUsername(String username) {
         return this.userRepository.findByUsername(username)
                 .orElseThrow(() -> new NoSuchElementException("datasource.error.user.not_found"));
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoDto getUserInfo(Authentication authentication) {
+        User user = this.findByUsernameOrEmail(authentication.getName());
+
+        return userMapper.toUserInfoDto(user);
     }
 }

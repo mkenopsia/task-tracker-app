@@ -24,7 +24,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@Valid @RequestBody UserSignUpRequest userSignUpRequest,
+    public ResponseEntity<UserSignUpResponse> signUp(@Valid @RequestBody UserSignUpRequest userSignUpRequest,
                                     HttpServletResponse response,
                                     BindingResult bindingResult) throws BindException {
         if(bindingResult.hasErrors()) {
@@ -37,16 +37,16 @@ public class AuthController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@Valid @RequestBody UserLoginRequest userLoginRequest,
+    public ResponseEntity<UserLoginResponse> signIn(@Valid @RequestBody UserLoginRequest userLoginRequest,
                                     HttpServletResponse response,
                                     BindingResult bindingResult) throws BindException {
         if(bindingResult.hasErrors()) {
             throw new BindException(bindingResult);
         }
 
-        this.authService.signInUser(userLoginRequest, response);
+        UserLoginResponse loginResponse = this.authService.signInUser(userLoginRequest, response);
 
-        return ResponseEntity.ok(new UserLoginResponse(userLoginRequest.identifier()));
+        return ResponseEntity.ok(loginResponse);
     }
 
     @PostMapping("/sign-out")

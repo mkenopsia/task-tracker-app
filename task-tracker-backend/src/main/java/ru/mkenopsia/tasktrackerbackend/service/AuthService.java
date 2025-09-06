@@ -8,10 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.mkenopsia.tasktrackerbackend.dto.TokenDto;
-import ru.mkenopsia.tasktrackerbackend.dto.UserLoginRequest;
-import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpRequest;
-import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpResponse;
+import ru.mkenopsia.tasktrackerbackend.dto.*;
 import ru.mkenopsia.tasktrackerbackend.entity.User;
 import ru.mkenopsia.tasktrackerbackend.mapper.UserMapper;
 import ru.mkenopsia.tasktrackerbackend.utils.CookieUtils;
@@ -42,7 +39,7 @@ public class AuthService {
         return userMapper.toSignUpResponse(user);
     }
 
-    public void signInUser(UserLoginRequest userLoginRequest, HttpServletResponse response) {
+    public UserLoginResponse signInUser(UserLoginRequest userLoginRequest, HttpServletResponse response) {
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userLoginRequest.identifier(),
                 userLoginRequest.password()
@@ -51,16 +48,18 @@ public class AuthService {
         User user = this.userService.findByUsernameOrEmail(userLoginRequest.identifier());
 
         this.provideToken(user, response);
+
+        return userMapper.toUserLoginResponse(user);
     }
 
 
     private void provideToken(User user, HttpServletResponse response) {
         TokenDto token = jwtTokenUtils.generateToken(user);
-        Cookie cookie = new Cookie("__Host-auth-token", token.token());
+        Cookie cookie = new Cookie("JWT", token.token());
         cookie.setPath("/");
         cookie.setDomain(null);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
+//        cookie.setSecure(true);
+//        cookie.setHttpOnly(true);
         cookie.setMaxAge((int) ChronoUnit.SECONDS.between(Instant.now(), token.expirationTime().toInstant()));
 
         response.addCookie(cookie);
@@ -79,7 +78,7 @@ public class AuthService {
 
             jwtBearerCookie.setPath("/");
             jwtBearerCookie.setDomain(null);
-            jwtBearerCookie.setSecure(true);
+//            jwtBearerCookie.setSecure(true);
             jwtBearerCookie.setHttpOnly(true);
             jwtBearerCookie.setMaxAge(0);
 

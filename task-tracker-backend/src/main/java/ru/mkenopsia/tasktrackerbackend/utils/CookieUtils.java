@@ -16,7 +16,7 @@ public class CookieUtils {
         }
 
         for(var cookie : cookies) {
-            if(cookie.getName().equals("__Host-auth-token")) {
+            if(cookie.getName().equals("JWT")) {
                 return cookie;
             }
         }
