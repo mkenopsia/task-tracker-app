@@ -32,6 +32,7 @@ public class UserService {
             throw new EntityExistsException("datasource.error.user.email_already_taken");
         }
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return this.userRepository.save(user);
     }
 

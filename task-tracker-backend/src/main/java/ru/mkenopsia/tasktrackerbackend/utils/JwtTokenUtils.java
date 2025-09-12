@@ -4,21 +4,20 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import ru.mkenopsia.tasktrackerbackend.dto.TokenDto;
-import ru.mkenopsia.tasktrackerbackend.entity.User;
+import ru.mkenopsia.tasktrackerbackend.dto.UserInfoDto;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenUtils {
 
     @Value("${jwt.secret}")
@@ -27,20 +26,22 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
+    private final TokenCookieUtils tokenCookieUtils;
+
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public TokenDto generateToken(User user) {
+    public TokenDto generateToken(UserInfoDto userInfoDto) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email", user.getEmail());
+        claims.put("email", userInfoDto.getEmail());
 
         Date issuedTime = new Date();
         Date expirationTime = new Date(issuedTime.getTime() + jwtLifetime.toMillis());
 
         String token = Jwts.builder()
                 .claims(claims)
-                .subject(user.getUsername())
+                .subject(userInfoDto.getUsername())
                 .issuedAt(issuedTime)
                 .expiration(expirationTime)
                 .signWith(getSigningKey())
@@ -77,9 +78,27 @@ public class JwtTokenUtils {
                 .getPayload();
     }
 
-    public String getToken(Cookie[] cookies) {
+    public String getTokenFromHttpCookie(Cookie[] cookies) {
         if(cookies == null) return null;
 
-        return CookieUtils.getJwtBearerCookie(cookies).getValue();
+        return tokenCookieUtils.getTokenBearerCookie(cookies).getValue();
+    }
+
+    public TokenDto refreshToken(String jwtToken) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", this.getEmail(jwtToken));
+
+        Date issuedTime = new Date();
+        Date expirationTime = new Date(issuedTime.getTime() + jwtLifetime.toMillis());
+
+        String token = Jwts.builder()
+                .claims(claims)
+                .subject(this.getUsername(jwtToken))
+                .issuedAt(issuedTime)
+                .expiration(expirationTime)
+                .signWith(getSigningKey())
+                .compact();
+
+        return new TokenDto(token, expirationTime);
     }
 }

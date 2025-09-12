@@ -6,16 +6,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.mkenopsia.tasktrackerbackend.dto.*;
 import ru.mkenopsia.tasktrackerbackend.entity.User;
 import ru.mkenopsia.tasktrackerbackend.mapper.UserMapper;
-import ru.mkenopsia.tasktrackerbackend.utils.CookieUtils;
 import ru.mkenopsia.tasktrackerbackend.utils.JwtTokenUtils;
+import ru.mkenopsia.tasktrackerbackend.utils.TokenCookieUtils;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 
 @Service
@@ -26,65 +23,31 @@ public class AuthService {
     private final UserMapper userMapper;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
+    private final TokenCookieUtils tokenCookieUtils;
 
-    public UserSignUpResponse signUpUser(UserSignUpRequest userSignUpRequest, HttpServletResponse response) {
+    public UserSignUpResponse signUpUser(UserSignUpRequest userSignUpRequest) {
         User user = userMapper.toEntity(userSignUpRequest);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        User createdUser = userService.save(user);
-
-        this.provideToken(createdUser, response);
+        this.userService.save(user);
 
         return userMapper.toSignUpResponse(user);
     }
 
-    public UserLoginResponse signInUser(UserLoginRequest userLoginRequest, HttpServletResponse response) {
-        this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                userLoginRequest.identifier(),
-                userLoginRequest.password()
-        ));
-
+    public UserLoginResponse signInUser(UserLoginRequest userLoginRequest) {
         User user = this.userService.findByUsernameOrEmail(userLoginRequest.identifier());
-
-        this.provideToken(user, response);
 
         return userMapper.toUserLoginResponse(user);
     }
 
-
-    private void provideToken(User user, HttpServletResponse response) {
-        TokenDto token = jwtTokenUtils.generateToken(user);
-        Cookie cookie = new Cookie("JWT", token.token());
-        cookie.setPath("/");
-        cookie.setDomain(null);
-//        cookie.setSecure(true);
-//        cookie.setHttpOnly(true);
-        cookie.setMaxAge((int) ChronoUnit.SECONDS.between(Instant.now(), token.expirationTime().toInstant()));
-
-        response.addCookie(cookie);
-    }
-
     public void signOutUser(HttpServletRequest request, HttpServletResponse response) {
-        Cookie jSessionIdCookie = new Cookie("JSESSIONID", "");
-        jSessionIdCookie.setMaxAge(0);
-        jSessionIdCookie.setPath("/");
-        jSessionIdCookie.setHttpOnly(true);
-
-        response.addCookie(jSessionIdCookie);
-
         try {
-            Cookie jwtBearerCookie = CookieUtils.getJwtBearerCookie(request.getCookies());
-
-            jwtBearerCookie.setPath("/");
-            jwtBearerCookie.setDomain(null);
-//            jwtBearerCookie.setSecure(true);
-            jwtBearerCookie.setHttpOnly(true);
-            jwtBearerCookie.setMaxAge(0);
-
-            response.addCookie(jwtBearerCookie);
+            response.addCookie(this.tokenCookieUtils.getDeletionCookie());
         } catch (NoSuchElementException ignored) {
 
         }
+    }
+
+    public Cookie getTokenCookie(UserInfoDto userInfoDto) {
+        return tokenCookieUtils.provideCookieWithRefreshedToken(jwtTokenUtils.generateToken(userInfoDto));
     }
 }

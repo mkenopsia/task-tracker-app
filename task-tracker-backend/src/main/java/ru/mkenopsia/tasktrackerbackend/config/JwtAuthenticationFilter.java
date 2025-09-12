@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtils jwtTokenUtils;
     private final UserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -36,13 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwtToken = null;
 
         try {
-            jwtToken = jwtTokenUtils.getToken(request.getCookies());
+            jwtToken = jwtTokenUtils.getTokenFromHttpCookie(request.getCookies());
         } catch (NoSuchElementException exception) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if(jwtToken == null || jwtToken.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
