@@ -6,14 +6,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.mkenopsia.tasktrackerbackend.utils.JwtTokenUtils;
+import ru.mkenopsia.tasktrackerbackend.service.JwtTokenService;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -21,9 +20,8 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenService jwtTokenService;
     private final UserDetailsService userDetailsService;
-    private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -38,18 +36,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwtToken = null;
 
         try {
-            jwtToken = jwtTokenUtils.getTokenFromHttpCookie(request.getCookies());
+            jwtToken = jwtTokenService.getTokenFromHttpCookie(request.getCookies());
         } catch (NoSuchElementException exception) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if(!jwtTokenUtils.isTokenValid(jwtToken)) {
+        if(!jwtTokenService.isTokenValid(jwtToken)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String username = jwtTokenUtils.getUsername(jwtToken);
+        String username = jwtTokenService.getUsername(jwtToken);
 
         if(!username.isBlank() && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {

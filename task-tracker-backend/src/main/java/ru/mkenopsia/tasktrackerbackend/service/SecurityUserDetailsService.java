@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.mkenopsia.tasktrackerbackend.dto.UserInfoDto;
+import ru.mkenopsia.tasktrackerbackend.dto.CustomUserDetails;
 import ru.mkenopsia.tasktrackerbackend.entity.User;
 import ru.mkenopsia.tasktrackerbackend.repository.UserRepository;
 
@@ -23,7 +23,7 @@ public class SecurityUserDetailsService implements UserDetailsService {
         User user = this.userRepository.findByUsernameOrEmail(usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("datasource.error.user.not_found"));
 
-        return new UserInfoDto(
+        return new CustomUserDetails(
                 user.getUsername(),
                 user.getPassword(),
                 user.getEmail(),

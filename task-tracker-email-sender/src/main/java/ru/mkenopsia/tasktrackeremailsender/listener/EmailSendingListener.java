@@ -3,11 +3,12 @@ package ru.mkenopsia.tasktrackeremailsender.listener;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mkenopsia.tasktrackeremailsender.dto.EmailMessageDto;
 import ru.mkenopsia.tasktrackeremailsender.service.EmailSendingService;
 
-@RestController
+@Component
 @RequiredArgsConstructor
 public class EmailSendingListener {
 

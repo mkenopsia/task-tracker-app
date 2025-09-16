@@ -15,17 +15,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import ru.mkenopsia.tasktrackerbackend.utils.JwtTokenUtils;
-import ru.mkenopsia.tasktrackerbackend.utils.TokenCookieUtils;
+import ru.mkenopsia.tasktrackerbackend.service.JwtTokenService;
+import ru.mkenopsia.tasktrackerbackend.service.TokenCookieService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,11 +31,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenService jwtTokenService;
     private final UserDetailsService userDetailsService;
+    private final TokenCookieService tokenCookieService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenUtils jwtTokenUtils, TokenCookieUtils tokenCookieUtils, AuthenticationManager authenticationManager) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -48,7 +45,7 @@ public class SecurityConfig {
                                         "/api/auth/sign-in",
                                         "/api/auth/sign-out").permitAll()
                                 .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthenticationFilter(jwtTokenUtils, userDetailsService, authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(jwtTokenService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(handling ->
                         handling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .sessionManagement(sessionManagement -> sessionManagement
@@ -69,13 +66,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SessionAuthenticationStrategy sessionAuthenticationStrategy(JwtTokenUtils jwtTokenUtils, TokenCookieUtils cookieUtils) {
-        return new JwtCookieSessionAuthenticationStrategy(jwtTokenUtils, cookieUtils);
-    }
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenUtils jwtTokenUtils, UserDetailsService userDetailsService, AuthenticationManager authenticationManager) {
-        return new JwtAuthenticationFilter(jwtTokenUtils, userDetailsService, authenticationManager);
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenService jwtTokenService, UserDetailsService userDetailsService) {
+        return new JwtAuthenticationFilter(jwtTokenService, userDetailsService);
     }
 
     @Bean

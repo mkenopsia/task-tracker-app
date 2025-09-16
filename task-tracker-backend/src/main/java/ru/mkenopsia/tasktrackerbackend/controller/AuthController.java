@@ -2,18 +2,20 @@ package ru.mkenopsia.tasktrackerbackend.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import ru.mkenopsia.tasktrackerbackend.dto.*;
-import ru.mkenopsia.tasktrackerbackend.mapper.UserMapper;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ru.mkenopsia.tasktrackerbackend.dto.UserLoginRequest;
+import ru.mkenopsia.tasktrackerbackend.dto.UserLoginResponse;
+import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpRequest;
+import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpResponse;
 import ru.mkenopsia.tasktrackerbackend.service.AuthService;
 
 @RestController
@@ -22,7 +24,6 @@ import ru.mkenopsia.tasktrackerbackend.service.AuthService;
 public class AuthController {
 
     private final AuthService authService;
-    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/sign-up")
     public ResponseEntity<UserSignUpResponse> signUp(@Valid @RequestBody UserSignUpRequest userSignUpRequest,
@@ -34,16 +35,7 @@ public class AuthController {
 
         UserSignUpResponse createdUser = this.authService.signUpUser(userSignUpRequest);
 
-        Authentication authentication = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                userSignUpRequest.username(),
-                userSignUpRequest.password()
-        ));
-
-        if (authentication instanceof UsernamePasswordAuthenticationToken &&
-                authentication.getPrincipal() instanceof UserInfoDto userInfoDto) {
-
-            response.addCookie(authService.getTokenCookie(userInfoDto));
-        }
+        response.addCookie(authService.getTokenCookie(createdUser.username(), createdUser.email()));
 
         return ResponseEntity.ok(createdUser);
     }
@@ -58,16 +50,7 @@ public class AuthController {
 
         UserLoginResponse loginResponse = this.authService.signInUser(userLoginRequest);
 
-        Authentication authentication = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                userLoginRequest.identifier(),
-                userLoginRequest.password()
-        ));
-
-        if (authentication instanceof UsernamePasswordAuthenticationToken &&
-                authentication.getPrincipal() instanceof UserInfoDto userInfoDto) {
-
-            response.addCookie(authService.getTokenCookie(userInfoDto));
-        }
+        response.addCookie(authService.getTokenCookie(loginResponse.username(), loginResponse.email()));
 
         return ResponseEntity.ok(loginResponse);
     }

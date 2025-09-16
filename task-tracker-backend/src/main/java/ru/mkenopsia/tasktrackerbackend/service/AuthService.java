@@ -5,13 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import ru.mkenopsia.tasktrackerbackend.dto.*;
 import ru.mkenopsia.tasktrackerbackend.entity.User;
 import ru.mkenopsia.tasktrackerbackend.mapper.UserMapper;
-import ru.mkenopsia.tasktrackerbackend.utils.JwtTokenUtils;
-import ru.mkenopsia.tasktrackerbackend.utils.TokenCookieUtils;
 
 import java.util.NoSuchElementException;
 
@@ -21,9 +18,9 @@ public class AuthService {
 
     private final UserService userService;
     private final UserMapper userMapper;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final JwtTokenService jwtTokenService;
     private final AuthenticationManager authenticationManager;
-    private final TokenCookieUtils tokenCookieUtils;
+    private final TokenCookieService tokenCookieService;
 
     public UserSignUpResponse signUpUser(UserSignUpRequest userSignUpRequest) {
         User user = userMapper.toEntity(userSignUpRequest);
@@ -41,13 +38,13 @@ public class AuthService {
 
     public void signOutUser(HttpServletRequest request, HttpServletResponse response) {
         try {
-            response.addCookie(this.tokenCookieUtils.getDeletionCookie());
+            response.addCookie(this.tokenCookieService.getDeletionCookie());
         } catch (NoSuchElementException ignored) {
 
         }
     }
 
-    public Cookie getTokenCookie(UserInfoDto userInfoDto) {
-        return tokenCookieUtils.provideCookieWithRefreshedToken(jwtTokenUtils.generateToken(userInfoDto));
+    public Cookie getTokenCookie(String username, String email) {
+        return tokenCookieService.provideCookieWithRefreshedToken(jwtTokenService.generateToken(username, email));
     }
 }
