@@ -1,14 +1,14 @@
 package ru.mkenopsia.tasktrackerbackend.service;
 
 import jakarta.servlet.http.Cookie;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.mkenopsia.tasktrackerbackend.dto.TokenDto;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 
-@Component
+@Service
 public class TokenCookieService {
 
     public Cookie getTokenBearerCookie(Cookie[] cookies) {

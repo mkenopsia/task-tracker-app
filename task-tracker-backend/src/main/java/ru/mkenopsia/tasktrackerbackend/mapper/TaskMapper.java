@@ -12,12 +12,12 @@ import ru.mkenopsia.tasktrackerbackend.entity.Task;
 )
 public interface TaskMapper {
 
-    @Mapping(target = "date", source = "date", expression = "java(task.getDate().toLocalDate())")
+//    @Mapping(target = "date", expression = "java(task.getDate().toLocalDate())")
     TaskDto toTaskDto(Task task);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authorId", source = "userId")
-    @Mapping(target = "isDone", defaultValue = "false")
+    @Mapping(target = "isDone", constant = "false")
     @Mapping(target = "name", source = "request.name")
     @Mapping(target = "description", source = "request.description")
     @Mapping(target = "date", source = "request.date")

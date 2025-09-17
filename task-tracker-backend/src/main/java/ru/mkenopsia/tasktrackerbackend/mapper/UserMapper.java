@@ -15,10 +15,10 @@ import ru.mkenopsia.tasktrackerbackend.entity.User;
 )
 public interface UserMapper {
 
-    @Mapping(target = "tasks", ignore = true)
+//    @Mapping(target = "tasks", ignore = true)
     User toEntity(UserSignUpRequest request);
 
-    @Mapping(target = "tasks", ignore = true)
+//    @Mapping(target = "tasks", ignore = true)
     User toEntity(UserInfoDto userInfoDto);
 
     UserSignUpResponse toSignUpResponse(User user);

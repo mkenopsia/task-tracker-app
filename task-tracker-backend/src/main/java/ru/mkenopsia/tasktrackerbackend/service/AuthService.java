@@ -19,7 +19,6 @@ public class AuthService {
     private final UserService userService;
     private final UserMapper userMapper;
     private final JwtTokenService jwtTokenService;
-    private final AuthenticationManager authenticationManager;
     private final TokenCookieService tokenCookieService;
 
     public UserSignUpResponse signUpUser(UserSignUpRequest userSignUpRequest) {
@@ -37,11 +36,7 @@ public class AuthService {
     }
 
     public void signOutUser(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            response.addCookie(this.tokenCookieService.getDeletionCookie());
-        } catch (NoSuchElementException ignored) {
-
-        }
+        response.addCookie(this.tokenCookieService.getDeletionCookie());
     }
 
     public Cookie getTokenCookie(String username, String email) {

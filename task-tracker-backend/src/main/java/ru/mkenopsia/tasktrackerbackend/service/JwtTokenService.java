@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.mkenopsia.tasktrackerbackend.dto.TokenDto;
-import ru.mkenopsia.tasktrackerbackend.dto.UserInfoDto;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
