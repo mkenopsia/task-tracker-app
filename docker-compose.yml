@@ -1,68 +1,77 @@
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: postgres_container
-    volumes:
-      - postgres_data:/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 1s
-      timeout: 60s
-      retries: 60
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5433:5432"
+#  postgres:
+#    image: postgres:15-alpine
+#    container_name: postgres_container
+#    volumes:
+#      - postgres_data:/data
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready" ]
+#      interval: 1s
+#      timeout: 60s
+#      retries: 60
+#    environment:
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#    ports:
+#      - "5433:5432"
 
-  zookeeper:
-    image: zookeeper:latest
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOO_4LW_COMMANDS_WHITELIST: ruok
-    ports:
-      - "2181:2181"
-    healthcheck:
-      test: echo "ruok" | timeout 2 nc -w 2 localhost 2181 | grep imok
-      interval: 1s
-      timeout: 60s
-      retries: 60
+#  zookeeper:
+#    image: zookeeper:latest
+#    container_name: zookeeper
+#    environment:
+#      ZOOKEEPER_CLIENT_PORT: 2181
+#      ZOO_4LW_COMMANDS_WHITELIST: ruok
+#    ports:
+#      - "2181:2181"
+#    healthcheck:
+#      test: echo "ruok" | timeout 2 nc -w 2 localhost 2181 | grep imok
+#      interval: 1s
+#      timeout: 60s
+#      retries: 60
 
   kafka:
-    image: apache/kafka:latest
-    depends_on:
-      - zookeeper
+    image: confluentinc/confluent-local:7.4.1
+#    networks:
+#      - localnet
+    hostname: kafka
+    container_name: kafka
     ports:
+      - "8082:8082"
       - "9092:9092"
+      - "9101:9101"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092  # для работы внутри Docker
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    healthcheck:
-      test: /kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 || exit 1
-      interval: 1s
-      timeout: 60s
-      retries: 60
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
+      KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092"
+#  kafka-ui:
+#    image: provectuslabs/kafka-ui:latest
+##    networks:
+##      - localnet
+#    container_name: kafka-ui
+#    ports:
+#      - 9999:8080
+#    environment:
+#      DYNAMIC_CONFIG_ENABLED: "true"
+#      KAFKA_CLUSTERS_0_NAME: "local"
+#      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
 
-  task-tracker-backend:
-    depends_on:
-      postgres:
-        condition: service_healthy
-    build: task-tracker-backend/.
-    env_file:
-      - .env
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
+#  task-tracker-backend:
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    build: task-tracker-backend/.
+#    env_file:
+#      - .env
+#    environment:
+#      SPRING_PROFILES_ACTIVE: dev
 
-  task-tracker-email-sender:
-    depends_on:
-      - task-tracker-backend
-    build: task-tracker-email-sender/.
+#  task-tracker-email-sender:
+#    depends_on:
+#      - task-tracker-backend
+#    build: task-tracker-email-sender/.
+#    environment:
+#      EMAIL_SENDING_TASKS: email-sending-tasks
 
 volumes:
   postgres_data:

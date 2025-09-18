@@ -31,5 +31,6 @@ public class Task {
 
 //    @ManyToOne
 //    private User author;
+    @Column(name = "c_author_id")
     private Integer authorId;
 }

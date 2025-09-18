@@ -1,5 +1,7 @@
 package ru.mkenopsia.tasktrackeremailsender.listener;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -13,10 +15,11 @@ import ru.mkenopsia.tasktrackeremailsender.service.EmailSendingService;
 public class EmailSendingListener {
 
     private final EmailSendingService emailSendingService;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "${EMAIL_SENDING_TASKS}")
-    public void emailSendingRequestListener(ConsumerRecord<Long, EmailMessageDto> emailMessageConsumerRecord) {
-        EmailMessageDto email = emailMessageConsumerRecord.value();
+    public void emailSendingRequestListener(ConsumerRecord<String, String> emailMessageConsumerRecord) throws JsonProcessingException {
+        EmailMessageDto email = this.objectMapper.readValue(emailMessageConsumerRecord.value(), EmailMessageDto.class);
         this.emailSendingService.sendEmail(email.emailAddress(), email.header(), email.body());
     }
 }

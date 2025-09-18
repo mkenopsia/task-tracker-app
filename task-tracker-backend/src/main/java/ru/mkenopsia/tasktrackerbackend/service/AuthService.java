@@ -4,13 +4,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
-import ru.mkenopsia.tasktrackerbackend.dto.*;
+import ru.mkenopsia.tasktrackerbackend.dto.UserLoginRequest;
+import ru.mkenopsia.tasktrackerbackend.dto.UserLoginResponse;
+import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpRequest;
+import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpResponse;
 import ru.mkenopsia.tasktrackerbackend.entity.User;
 import ru.mkenopsia.tasktrackerbackend.mapper.UserMapper;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor

@@ -17,7 +17,8 @@ public class TokenCookieService {
         }
 
         for(var cookie : cookies) {
-            if(cookie.getName().equals("__Host-auth-token")) {
+//            if(cookie.getName().equals("__Host-auth-token")) {
+            if(cookie.getName().equals("auth-token")) {
                 return cookie;
             }
         }
@@ -26,22 +27,24 @@ public class TokenCookieService {
     }
 
     public Cookie provideCookieWithRefreshedToken(TokenDto tokenDto) {
-        Cookie cookie = new Cookie("__Host-auth-token", tokenDto.token());
+//        Cookie cookie = new Cookie("__Host-auth-token", tokenDto.token());
+        Cookie cookie = new Cookie("auth-token", tokenDto.token());
         cookie.setPath("/");
-        cookie.setDomain(null);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
+//        cookie.setDomain(null);
+//        cookie.setSecure(true);
+//        cookie.setHttpOnly(true);
         cookie.setMaxAge((int) ChronoUnit.SECONDS.between(Instant.now(), tokenDto.expirationTime().toInstant()));
 
         return cookie;
     }
 
     public Cookie getDeletionCookie() {
-        Cookie cookie = new Cookie("__Host-auth-token", "");
+//        Cookie cookie = new Cookie("__Host-auth-token", "");
+        Cookie cookie = new Cookie("auth-token", "");
         cookie.setPath("/");
-        cookie.setDomain(null);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
+//        cookie.setDomain(null);
+//        cookie.setSecure(true);
+//        cookie.setHttpOnly(true);
         cookie.setMaxAge(0);
 
         return cookie;
