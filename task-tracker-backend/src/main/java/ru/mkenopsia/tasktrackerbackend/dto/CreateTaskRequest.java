@@ -3,7 +3,7 @@ package ru.mkenopsia.tasktrackerbackend.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 public record CreateTaskRequest(
         @NotBlank(message = "{validation.error.task.name.not_blank}")
@@ -11,6 +11,6 @@ public record CreateTaskRequest(
         String name,
         @Size(max = 500, message = "{validation.error.task.description_invalid_size}")
         String description,
-        ZonedDateTime date
+        LocalDate date
 ) {
 }

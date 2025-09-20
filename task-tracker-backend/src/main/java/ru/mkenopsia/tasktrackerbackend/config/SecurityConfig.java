@@ -23,6 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.mkenopsia.tasktrackerbackend.service.JwtTokenService;
 import ru.mkenopsia.tasktrackerbackend.service.TokenCookieService;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

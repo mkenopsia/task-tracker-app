@@ -1,12 +1,12 @@
 package ru.mkenopsia.tasktrackerbackend.dto;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 public record UpdateTaskResponse(
         Integer id,
         String name,
         String description,
         Boolean isDone,
-        ZonedDateTime date
+        LocalDate date
 ) {
 }

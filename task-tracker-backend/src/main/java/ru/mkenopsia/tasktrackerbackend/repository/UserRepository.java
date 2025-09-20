@@ -1,12 +1,9 @@
 package ru.mkenopsia.tasktrackerbackend.repository;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.mkenopsia.tasktrackerbackend.entity.User;
+import ru.mkenopsia.shared.entity.User;
 
 import java.util.List;
 import java.util.Optional;

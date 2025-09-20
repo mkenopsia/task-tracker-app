@@ -1,14 +1,11 @@
 package ru.mkenopsia.tasktrackerbackend.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 public record CreateTaskResponse(
         Integer id,
         String name,
         String description,
-        ZonedDateTime date
+        LocalDate date
 ) {
 }

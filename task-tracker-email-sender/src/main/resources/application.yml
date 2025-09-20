@@ -17,5 +17,14 @@ spring:
     host: smtp.yandex.ru
     port: 465
     protocol: smtps
+    properties:
+      smth:
+        auth: true
+      smtp:
+        starttls:
+          enable: true
 
-EMAIL_SENDING_TASKS: email-sending-tasks
+EMAIL_SENDING_TOPIC: email-sending-tasks
+
+server:
+  port: 8081

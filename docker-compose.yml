@@ -16,20 +16,6 @@ services:
 #    ports:
 #      - "5433:5432"
 
-#  zookeeper:
-#    image: zookeeper:latest
-#    container_name: zookeeper
-#    environment:
-#      ZOOKEEPER_CLIENT_PORT: 2181
-#      ZOO_4LW_COMMANDS_WHITELIST: ruok
-#    ports:
-#      - "2181:2181"
-#    healthcheck:
-#      test: echo "ruok" | timeout 2 nc -w 2 localhost 2181 | grep imok
-#      interval: 1s
-#      timeout: 60s
-#      retries: 60
-
   kafka:
     image: confluentinc/confluent-local:7.4.1
 #    networks:
@@ -65,7 +51,7 @@ services:
 #      - .env
 #    environment:
 #      SPRING_PROFILES_ACTIVE: dev
-
+#
 #  task-tracker-email-sender:
 #    depends_on:
 #      - task-tracker-backend

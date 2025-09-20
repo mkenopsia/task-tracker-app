@@ -17,6 +17,7 @@ import ru.mkenopsia.tasktrackerbackend.dto.UserLoginResponse;
 import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpRequest;
 import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpResponse;
 import ru.mkenopsia.tasktrackerbackend.service.AuthService;
+import ru.mkenopsia.tasktrackerbackend.service.EmailSenderService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,6 +25,7 @@ import ru.mkenopsia.tasktrackerbackend.service.AuthService;
 public class AuthController {
 
     private final AuthService authService;
+    private final EmailSenderService emailSenderService;
 
     @PostMapping("/sign-up")
     public ResponseEntity<UserSignUpResponse> signUp(@Valid @RequestBody UserSignUpRequest userSignUpRequest,
@@ -34,6 +36,8 @@ public class AuthController {
         }
 
         UserSignUpResponse createdUser = this.authService.signUpUser(userSignUpRequest);
+
+        this.emailSenderService.sendGreetingEmail(createdUser.username(), createdUser.email());
 
         response.addCookie(authService.getTokenCookie(createdUser.username(), createdUser.email()));
 

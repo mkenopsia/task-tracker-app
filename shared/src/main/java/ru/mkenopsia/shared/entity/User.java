@@ -1,10 +1,8 @@
-package ru.mkenopsia.tasktrackerbackend.entity;
+package ru.mkenopsia.shared.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -24,7 +22,4 @@ public class User {
 
     @Column(name = "c_password")
     private String password;
-
-//    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-//    private List<Task> tasks;
 }

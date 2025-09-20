@@ -3,12 +3,11 @@ package ru.mkenopsia.tasktrackerbackend.service;
 import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mkenopsia.shared.entity.User;
 import ru.mkenopsia.tasktrackerbackend.dto.UserInfoDto;
-import ru.mkenopsia.tasktrackerbackend.entity.User;
 import ru.mkenopsia.tasktrackerbackend.mapper.UserMapper;
 import ru.mkenopsia.tasktrackerbackend.repository.UserRepository;
 

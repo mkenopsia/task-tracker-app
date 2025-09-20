@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.mkenopsia.shared.entity.User;
 import ru.mkenopsia.tasktrackerbackend.dto.CustomUserDetails;
-import ru.mkenopsia.tasktrackerbackend.entity.User;
 import ru.mkenopsia.tasktrackerbackend.repository.UserRepository;
 
 import java.util.List;

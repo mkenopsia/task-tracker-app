@@ -12,31 +12,13 @@ import ru.mkenopsia.tasktrackerbackend.dto.*;
 import ru.mkenopsia.tasktrackerbackend.mapper.TaskMapper;
 import ru.mkenopsia.tasktrackerbackend.service.TaskService;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping("/api/task")
 @RequiredArgsConstructor
 public class TaskController {
 
     private final TaskService taskService;
     private final TaskMapper taskMapper;
-
-    @GetMapping
-    public ResponseEntity<List<TaskDto>> getTasksWithinPeriod(@RequestParam("from") ZonedDateTime from, @RequestParam("to") ZonedDateTime to) {
-        if (from.isAfter(to)) {
-            throw new IllegalArgumentException("validation.error.invalid_period");
-        }
-
-        List<TaskDto> tasks = new ArrayList<>();
-        if (SecurityContextHolder.getContext().getAuthentication().getDetails() instanceof CustomUserDetails userDetails) {
-            tasks = this.taskService.getUserTasksWithinPeriod(userDetails.getId(), from, to);
-        }
-
-        return ResponseEntity.ok(tasks);
-    }
 
     @PostMapping
     public ResponseEntity<CreateTaskResponse> createTask(@Valid @RequestBody CreateTaskRequest request, BindingResult bindingResult) throws BindException {
@@ -58,15 +40,24 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteTask(@RequestParam("taskId") Integer taskId) {
+    @PostMapping("toggleStatus/{taskId}")
+    public ResponseEntity<TaskDto> toggleTaskStatus(@PathVariable Integer taskId) {
+        return ResponseEntity.ok().body(this.taskMapper.toTaskDto(
+                this.taskService.toggleTaskStatus(taskId)
+        ));
+    }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<?> deleteTask(@PathVariable("taskId") Integer taskId) {
         this.taskService.deleteTaskById(taskId);
 
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping
-    public ResponseEntity<UpdateTaskResponse> updateTask(@Valid @RequestBody UpdateTaskRequest request, BindingResult bindingResult) throws BindException {
+    @PatchMapping("/{taskId}")
+    public ResponseEntity<UpdateTaskResponse> updateTask(@PathVariable("taskId") Integer taskId,
+                                                         @Valid @RequestBody UpdateTaskRequest request,
+                                                         BindingResult bindingResult) throws BindException {
         if (bindingResult.hasErrors()) {
             throw new BindException(bindingResult);
         }
@@ -77,7 +68,7 @@ public class TaskController {
         }
 
         UpdateTaskResponse updatedTask = this.taskMapper.toUpdateTaskResponse(
-                this.taskService.updateTask(this.taskMapper.toEntity(userId, request))
+                this.taskService.updateTask(this.taskMapper.toEntity(userId, taskId, request))
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedTask);

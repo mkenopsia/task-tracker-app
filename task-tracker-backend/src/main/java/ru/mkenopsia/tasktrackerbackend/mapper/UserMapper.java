@@ -1,29 +1,87 @@
 package ru.mkenopsia.tasktrackerbackend.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-import ru.mkenopsia.tasktrackerbackend.dto.UserInfoDto;
-import ru.mkenopsia.tasktrackerbackend.dto.UserLoginResponse;
-import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpRequest;
-import ru.mkenopsia.tasktrackerbackend.dto.UserSignUpResponse;
-import ru.mkenopsia.tasktrackerbackend.entity.User;
+import org.springframework.stereotype.Component;
+import ru.mkenopsia.shared.entity.User;
+import ru.mkenopsia.tasktrackerbackend.dto.*;
 
-@Mapper(
-        componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE
-)
-public interface UserMapper {
+//@Mapper(
+//        componentModel = "spring",
+//        unmappedTargetPolicy = ReportingPolicy.IGNORE
+//)
+//public interface UserMapper {
+//
+//    User toEntity(UserSignUpRequest request);
+//
+//    User toEntity(UserInfoDto userInfoDto);
+//
+//    UserSignUpResponse toSignUpResponse(User user);
+//
+//    UserInfoDto toUserInfoDto(User user);
+//
+//    UserLoginResponse toUserLoginResponse(User user);
+//}
 
-//    @Mapping(target = "tasks", ignore = true)
-    User toEntity(UserSignUpRequest request);
+@Component
+public class UserMapper {
+    public User toEntity(UserSignUpRequest request) {
+        if (request == null) {
+            return null;
+        } else {
+            User user = new User();
+            user.setUsername(request.username());
+            user.setEmail(request.email());
+            user.setPassword(request.password());
+            return user;
+        }
+    }
 
-//    @Mapping(target = "tasks", ignore = true)
-    User toEntity(UserInfoDto userInfoDto);
+    public User toEntity(UserInfoDto userInfoDto) {
+        if (userInfoDto == null) {
+            return null;
+        } else {
+            User user = new User();
+            user.setUsername(userInfoDto.username());
+            user.setEmail(userInfoDto.email());
+            return user;
+        }
+    }
 
-    UserSignUpResponse toSignUpResponse(User user);
+    public UserSignUpResponse toSignUpResponse(User user) {
+        if (user == null) {
+            return null;
+        } else {
+            String username = null;
+            String email = null;
+            username = user.getUsername();
+            email = user.getEmail();
+            UserSignUpResponse userSignUpResponse = new UserSignUpResponse(username, email);
+            return userSignUpResponse;
+        }
+    }
 
-    UserInfoDto toUserInfoDto(User user);
+    public UserInfoDto toUserInfoDto(User user) {
+        if (user == null) {
+            return null;
+        } else {
+            String username = null;
+            String email = null;
+            username = user.getUsername();
+            email = user.getEmail();
+            UserInfoDto userInfoDto = new UserInfoDto(username, email);
+            return userInfoDto;
+        }
+    }
 
-    UserLoginResponse toUserLoginResponse(User user);
+    public UserLoginResponse toUserLoginResponse(User user) {
+        if (user == null) {
+            return null;
+        } else {
+            String username = null;
+            String email = null;
+            username = user.getUsername();
+            email = user.getEmail();
+            UserLoginResponse userLoginResponse = new UserLoginResponse(username, email);
+            return userLoginResponse;
+        }
+    }
 }

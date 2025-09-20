@@ -1,11 +1,10 @@
-package ru.mkenopsia.tasktrackerbackend.entity;
+package ru.mkenopsia.shared.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -27,7 +26,7 @@ public class Task {
     private Boolean isDone;
 
     @Column(name = "c_date")
-    private ZonedDateTime date;
+    private LocalDate date;
 
 //    @ManyToOne
 //    private User author;

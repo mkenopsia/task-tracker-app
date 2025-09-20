@@ -1,4 +1,4 @@
-package ru.mkenopsia.tasktrackeremailsender.dto;
+package ru.mkenopsia.shared.dto;
 
 public record EmailMessageDto(
         String emailAddress,
