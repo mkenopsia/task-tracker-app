@@ -33,3 +33,5 @@ build/
 .vscode/
 
 .env
+
+/task-tracker-frontend/dist/

@@ -5,7 +5,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 1s
       timeout: 60s
       retries: 60
@@ -29,17 +29,23 @@ services:
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
       KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092"
-  #  kafka-ui:
-  #    image: provectuslabs/kafka-ui:latest
-  ##    networks:
-  ##      - localnet
-  #    container_name: kafka-ui
-  #    ports:
-  #      - 9999:8080
-  #    environment:
-  #      DYNAMIC_CONFIG_ENABLED: "true"
-  #      KAFKA_CLUSTERS_0_NAME: "local"
-  #      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-broker-api-versions --bootstrap-server kafka:29092 | grep -q 'version: 7.4'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+  #    kafka-ui:
+  #      image: provectuslabs/kafka-ui:latest
+  #  #    networks:
+  #  #      - localnet
+  #      container_name: kafka-ui
+  #      ports:
+  #        - 9999:8080
+  #      environment:
+  #        DYNAMIC_CONFIG_ENABLED: "true"
+  #        KAFKA_CLUSTERS_0_NAME: "local"
+  #        KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
 
   task-tracker-backend:
     depends_on:
@@ -49,16 +55,22 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8080:8080"
 
   task-tracker-email-sender:
     depends_on:
-      - task-tracker-backend
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     build: task-tracker-email-sender/.
+    env_file:
+      - .env
     environment:
       EMAIL_SENDING_TASKS: email-sending-tasks
+      SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8081:8081"
 
@@ -67,6 +79,10 @@ services:
       - task-tracker-backend
       - task-tracker-email-sender
     build: task-tracker-scheduler/.
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8082:8082"
 
@@ -75,7 +91,7 @@ services:
       - task-tracker-backend
     build: task-tracker-frontend/.
     ports:
-      - "80:80"
+      - "81:80"
 
 volumes:
   postgres_data:
