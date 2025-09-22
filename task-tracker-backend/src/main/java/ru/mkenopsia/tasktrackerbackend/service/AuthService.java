@@ -1,8 +1,6 @@
 package ru.mkenopsia.tasktrackerbackend.service;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.mkenopsia.shared.entity.User;
