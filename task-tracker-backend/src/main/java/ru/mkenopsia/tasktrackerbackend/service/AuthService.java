@@ -35,8 +35,8 @@ public class AuthService {
         return userMapper.toUserLoginResponse(user);
     }
 
-    public void signOutUser(HttpServletRequest request, HttpServletResponse response) {
-        response.addCookie(this.tokenCookieService.getDeletionCookie());
+    public Cookie getDeletionCookie() {
+        return this.tokenCookieService.getDeletionCookie();
     }
 
     public Cookie getTokenCookie(String username, String email) {

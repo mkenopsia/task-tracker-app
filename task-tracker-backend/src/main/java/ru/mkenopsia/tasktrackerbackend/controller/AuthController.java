@@ -60,9 +60,9 @@ public class AuthController {
     }
 
     @PostMapping("/sign-out")
-    public ResponseEntity<?> signOut(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> signOut(HttpServletResponse response) {
 
-        this.authService.signOutUser(request, response);
+        response.addCookie(authService.getDeletionCookie());
 
         return ResponseEntity.noContent().build();
     }
