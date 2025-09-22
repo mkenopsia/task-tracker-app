@@ -1,8 +1,6 @@
 package ru.mkenopsia.tasktrackerbackend.service;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.mkenopsia.shared.entity.User;
@@ -35,8 +33,8 @@ public class AuthService {
         return userMapper.toUserLoginResponse(user);
     }
 
-    public void signOutUser(HttpServletRequest request, HttpServletResponse response) {
-        response.addCookie(this.tokenCookieService.getDeletionCookie());
+    public Cookie getDeletionCookie() {
+        return this.tokenCookieService.getDeletionCookie();
     }
 
     public Cookie getTokenCookie(String username, String email) {
