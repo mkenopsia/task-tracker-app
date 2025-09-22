@@ -24,7 +24,7 @@ public class EmailSenderService {
                 null, Locale.getDefault());
 
         String greetingMessage = this.messageSource.getMessage("email.greeting.message",
-                null, Locale.getDefault()).formatted(username); //todo NoSuchMessageException
+                null, Locale.getDefault()).formatted(username);
 
         template.send(topicName, new EmailMessageDto(email, greetingHeader, greetingMessage));
     }

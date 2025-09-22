@@ -18,6 +18,7 @@
     <description>TodoPlanner</description>
 
     <modules>
+        <module>shared</module>
         <module>task-tracker-backend</module>
         <module>task-tracker-email-sender</module>
         <module>task-tracker-scheduler</module>
@@ -141,18 +142,6 @@
                             <artifactId>lombok</artifactId>
                         </path>
                     </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

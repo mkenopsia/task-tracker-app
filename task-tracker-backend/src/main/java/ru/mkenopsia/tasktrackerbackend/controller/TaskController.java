@@ -30,7 +30,7 @@ public class TaskController {
         if (SecurityContextHolder.getContext().getAuthentication().getDetails() instanceof CustomUserDetails userDetails) {
             userId = userDetails.getId();
         } else {
-            throw new IllegalArgumentException(); //todo подписать
+            throw new IllegalArgumentException("server.auth.exception");
         }
 
         CreateTaskResponse createdTask = this.taskMapper.toCreateTaskResponse(
@@ -65,6 +65,8 @@ public class TaskController {
         Integer userId = null;
         if (SecurityContextHolder.getContext().getAuthentication().getDetails() instanceof CustomUserDetails userDetails) {
             userId = userDetails.getId();
+        } else {
+            throw new IllegalArgumentException("server.auth.exception");
         }
 
         UpdateTaskResponse updatedTask = this.taskMapper.toUpdateTaskResponse(

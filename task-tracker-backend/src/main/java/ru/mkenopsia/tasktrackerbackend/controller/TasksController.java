@@ -40,6 +40,8 @@ public class TasksController {
         if (SecurityContextHolder.getContext().getAuthentication().getDetails()
                 instanceof CustomUserDetails userDetails) {
             tasks = this.taskService.getUserTasksWithinPeriod(userDetails.getId(), from, to);
+        } else {
+            throw new IllegalArgumentException("server.auth.exception");
         }
 
         return ResponseEntity.ok(tasks);
@@ -51,6 +53,8 @@ public class TasksController {
         if (SecurityContextHolder.getContext().getAuthentication().getDetails()
                 instanceof CustomUserDetails userDetails) {
             tasks = this.taskService.getAllUserTasks(userDetails.getId());
+        } else {
+            throw new IllegalArgumentException("server.auth.exception");
         }
 
         return ResponseEntity.ok(tasks);
@@ -67,6 +71,8 @@ public class TasksController {
         if (SecurityContextHolder.getContext().getAuthentication().getDetails()
                 instanceof CustomUserDetails userDetails) {
             userId = userDetails.getId();
+        } else {
+            throw new IllegalArgumentException("server.auth.exception");
         }
 
         List<CreateTaskResponse> createdTasks = this.taskMapper.toCreateTaskResponses(
