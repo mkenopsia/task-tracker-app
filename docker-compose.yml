@@ -18,8 +18,8 @@ services:
 
   kafka:
     image: confluentinc/confluent-local:7.4.1
-    #    networks:
-    #      - localnet
+#    networks:
+#      - localnet
     hostname: kafka
     container_name: kafka
     ports:
@@ -29,12 +29,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
       KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092"
-    healthcheck:
-      test: [ "CMD-SHELL", "kafka-broker-api-versions --bootstrap-server kafka:29092 | grep -q 'version: 7.4'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 40s
   #    kafka-ui:
   #      image: provectuslabs/kafka-ui:latest
   #  #    networks:
@@ -62,8 +56,6 @@ services:
   task-tracker-email-sender:
     depends_on:
       postgres:
-        condition: service_healthy
-      kafka:
         condition: service_healthy
     build: task-tracker-email-sender/.
     env_file:
