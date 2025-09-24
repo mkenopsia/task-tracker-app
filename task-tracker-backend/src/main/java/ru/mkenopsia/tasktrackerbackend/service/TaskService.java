@@ -9,7 +9,6 @@ import ru.mkenopsia.tasktrackerbackend.mapper.TaskMapper;
 import ru.mkenopsia.tasktrackerbackend.repository.TaskRepository;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;

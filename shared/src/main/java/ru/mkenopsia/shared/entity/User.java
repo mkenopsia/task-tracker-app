@@ -1,12 +1,14 @@
 package ru.mkenopsia.shared.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(schema = "user_management", name = "t_user")
 public class User {
 

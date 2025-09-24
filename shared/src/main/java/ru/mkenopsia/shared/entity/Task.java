@@ -1,15 +1,17 @@
 package ru.mkenopsia.shared.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(schema = "task_management", name = "t_task")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
     @Id
